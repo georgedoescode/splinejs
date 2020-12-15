@@ -22,7 +22,7 @@ function formatPoints(points, close) {
   return points.flat();
 }
 
-function spline(points = [], tension = 1, close = false) {
+function spline(points = [], tension = 1, close = false, cb) {
   points = formatPoints(points, close);
 
   const size = points.length;
@@ -32,6 +32,8 @@ function spline(points = [], tension = 1, close = false) {
   const startPointY = close ? points[3] : points[1];
 
   let path = "M" + [startPointX, startPointY];
+
+  cb && cb("MOVE", [startPointX, startPointY]);
 
   const startIteration = close ? 2 : 0;
   const maxIteration = close ? size - 4 : size - 2;
@@ -57,6 +59,8 @@ function spline(points = [], tension = 1, close = false) {
     const cp2y = y2 - ((y3 - y1) / 6) * tension;
 
     path += "C" + [cp1x, cp1y, cp2x, cp2y, x2, y2];
+
+    cb && cb("CURVE", [cp1x, cp1y, cp2x, cp2y, x2, y2]);
   }
 
   return path;
